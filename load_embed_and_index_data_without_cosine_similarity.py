@@ -4,28 +4,42 @@ import json
 import openai
 import numpy as np
 import speech_recognition as sr
+import subprocess
+import tempfile
 
 
-client = openai.OpenAI(api_key='YOUR API KEY')
-faiss_index_path = "C:\\office\\chatbots\\index_store\\faiss_index.index"
+client = openai.OpenAI(api_key='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')
+faiss_index_path = "C:\\office\\chatbot\\index_store\\faiss_index.index"
 
-def convert_speech_to_text(self):
+def convert_speech_to_text():
     recognizer = sr.Recognizer()
     with sr.Microphone() as source:
         print("Listening...")
         audio = recognizer.listen(source)
-    try:
-        text = recognizer.recognize_google(audio)
-        print("You said:", text)
-        return text
-    except sr.UnknownValueError:
-        print("Sorry, I couldn't understand. Please repeat your question.")
-        return None
+    
+    audio_data  = audio.get_wav_data()
+    with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as temp_wav_file:
+        temp_wav_file.write(audio_data)
+        temp_wav_file_path = temp_wav_file.name
+    
+    temp_flac_file_path = temp_wav_file_path.replace(".wav", ".flac")
+    subprocess.run(["ffmpeg", "-i", temp_wav_file_path, temp_flac_file_path])
+    
+    with open(temp_flac_file_path, "rb") as flac_file:
+        response = client.audio.transcriptions.create(
+            file=flac_file,
+            model="whisper-1",
+            language="en",
+            response_format="text",
+            temperature=0.2,
+        )
+        return response
     
 def identify_question(text):
     # Implement code to identify question from the text
     # Example: return text.split('?')[0]
-    return text
+    # return text
+    return text.strip().endswith('?')
 
 def extract_text_from_pdf(pdf_path):
     doc = fitz.open(pdf_path)
@@ -120,12 +134,13 @@ if __name__ == "__main__":
     print("Welcome to the Knowledge Base bot. Type 'exit' or 'quit' to stop")
     conversation_data = []
     while True:
-        if 1:
-            # customer_question = "Who launched ReClor?"
-            customer_question = input("\nEnter your question: ")
-            if customer_question and (customer_question.lower() == "exit" or customer_question.lower() == "quit"):
-                break
-                
+        # customer_question = "Who launched ReClor?"
+        # customer_question = convert_speech_to_text()
+        customer_question = input("\nEnter your question: ")
+        if customer_question and (customer_question.lower() == "exit" or customer_question.lower() == "quit"):
+            break
+
+        if identify_question(customer_question):                
             # Call the function to search in the vector database
             metadata, indices, distances = search_in_knowledge_base(customer_question, faiss_index_path)
             result_metadata = metadata[indices[0][0]]
@@ -137,16 +152,6 @@ if __name__ == "__main__":
             print("\nOpenAI Chat Completion Answer:", answer)
 
             conversation_data.append(answer)
-
-        # if 0:
-        #     text = convert_speech_to_text()
-        #     question = identify_question(text)
-        #     metadata, indices, distances = search_in_knowledge_base(question, faiss_index_path)
-        #     result_metadata = metadata[indices[0][0]]
-        #     answer = find_best_answer(result_metadata)
-        #     print("\nOpenAI Chat Completion Answer:", answer)
-            
-        #     conversation_data.append(answer)
 
     print("Conversation Data: ", conversation_data)
     
