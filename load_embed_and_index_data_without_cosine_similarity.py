@@ -8,7 +8,7 @@ import subprocess
 import tempfile
 
 
-client = openai.OpenAI(api_key='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')
+client = openai.OpenAI(api_key='YOUR-API-KEY')
 faiss_index_path = "C:\\office\\chatbot\\index_store\\faiss_index.index"
 
 def convert_speech_to_text():

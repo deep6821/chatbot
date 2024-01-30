@@ -90,7 +90,7 @@ def token_and_sentence_split(text, max_tokens=4096, max_sentence_tokens=1024):
 
 def generate_openai_embedding(text, max_tokens=4096):
     print("Here ----------------------------------")
-    client = openai.OpenAI(api_key='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')
+    client = openai.OpenAI(api_key='YOUR-API-KEY')
     response = client.embeddings.create(
         model="text-embedding-ada-002",
         input=[text],
