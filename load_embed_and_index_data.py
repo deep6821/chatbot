@@ -11,9 +11,8 @@ import tempfile
 
 
 nlp = spacy.load("en_core_web_md")
-client = openai.OpenAI(api_key='YOUR-API-KEY')
-faiss_index_path = "C:\\office\\chatbot\\index_store\\faiss_index.index"
-# faiss_index_path = "C:\\office\\chatbot\\index_store\\test_faiss_index.index"
+client = openai.OpenAI(api_key='Your GPT API Key Here')
+faiss_index_path = "faiss_index.index"
 
 
 def convert_speech_to_text():

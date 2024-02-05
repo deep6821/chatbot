@@ -1,7 +1,7 @@
 import faiss
 
 # Your existing code to read the Faiss index
-faiss_index_path = "C:\\office\\chatbots\\index_store\\faiss_index.index"
+faiss_index_path = "faiss_index.index"
 index = faiss.read_index(faiss_index_path)
 
 # Access the underlying index

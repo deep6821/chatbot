@@ -11,9 +11,8 @@ import uuid
 
 
 # Update with your desired path
-faiss_index_path = "C:\\office\\chatbot\\index_store\\faiss_index.index"
-# faiss_index_path = "C:\\office\\chatbot\\index_store\\test_faiss_index.index"
-pdf_file_path = "C:\\Users\\rohitpandey02\\Downloads\\HAI_AI-Index-Report_2023.pdf"
+faiss_index_path = "faiss_index.index"
+pdf_file_path = "HAI_AI-Index-Report_2023.pdf"
 
 # Open AI's token splitting library
 # tiktokenInstance = tiktoken.encoding_for_model("text-davinci-003")
@@ -90,7 +89,7 @@ def token_and_sentence_split(text, max_tokens=4096, max_sentence_tokens=1024):
 
 def generate_openai_embedding(text, max_tokens=4096):
     print("Here ----------------------------------")
-    client = openai.OpenAI(api_key='YOUR-API-KEY')
+    client = openai.OpenAI(api_key='Your GPT API Key Here')
     response = client.embeddings.create(
         model="text-embedding-ada-002",
         input=[text],
@@ -177,22 +176,7 @@ def process_and_save_pdf(pdf_file_path, faiss_index_path):
     # Save OpenAI embedding and actual page numbers to Faiss index
     save_to_faiss_index(split_pdf_data, pdf_file_path, faiss_index_path)
 
-def process_and_save_csv(csv_file_path, faiss_index_path):
-    # Read CSV file using pandas
-    df = pd.read_csv(csv_file_path)
-
-    # Assuming all columns are numeric and represent vectors
-    vectors = df.to_numpy(dtype='float32')
-
-    # Extract page numbers from the "page_number" column
-    page_numbers = df["page_number"].tolist()
-
-    # Save CSV data and page numbers to Faiss index
-    save_to_faiss_index(vectors, [{"page_number": page} for page in page_numbers], faiss_index_path)
 
 if __name__ == "__main__":
     # Process and save PDF data to Faiss index
     process_and_save_pdf(pdf_file_path, faiss_index_path)
-
-    # Process and save CSV data to Faiss index
-    # process_and_save_csv(csv_file_path, faiss_index_path)
